@@ -4,5 +4,6 @@
   "sources": {
     "dir": "src",
     "subdirs": true
-  }
+  },
+  "suffix": ".bs.js"
 }
