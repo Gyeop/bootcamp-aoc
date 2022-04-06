@@ -77,12 +77,16 @@ const maxPassId = Math.max(
 );
 
 // Part2
-const id =
-  passes
-    .map(splitPass)
-    .map((locations) => locations.map(getSeatNumber))
-    .map(getSeatId)
-    .sort((a, b) => a - b)
-    .find((number, index) => number - index === 86) - 1;
 
-console.log(id);
+function toWindows(array, size) {
+  return Array.from({ length: array.length - (size - 1) }, (_, index) => array.slice(index, index + size));
+}
+
+const arr = passes
+  .map(splitPass)
+  .map((locations) => locations.map(getSeatNumber))
+  .map(getSeatId)
+  .sort((a, b) => a - b);
+const mySeatId = toWindows(arr, 2).find(([a, b]) => b - a > 1)[0];
+
+console.log(mySeatId);
