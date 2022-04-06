@@ -76,4 +76,13 @@ const maxPassId = Math.max(
     .map(getSeatId)
 );
 
-console.log(maxPassId);
+// Part2
+const id =
+  passes
+    .map(splitPass)
+    .map((locations) => locations.map(getSeatNumber))
+    .map(getSeatId)
+    .sort((a, b) => a - b)
+    .find((number, index) => number - index === 86) - 1;
+
+console.log(id);
