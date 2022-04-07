@@ -25,6 +25,7 @@ let changeStringsToBinary = (arr: array<string>) => {
   0101100101 
   -> 512*0 + 256*1 + 128*0 + 64*1 + 32*1 + 16*0 + 8*0 + 4*1 + 2*0 + 1*1 = 357
   -> 256+ 64 + 32 + 4 + 1 = 357 
+  8을 곱하는 이유는 뒤에 3자리(Right, Left)를 의미하는 것. 2^3 = 8
 */
 
 let calculateDecimal = (~base, ~exp) => {
