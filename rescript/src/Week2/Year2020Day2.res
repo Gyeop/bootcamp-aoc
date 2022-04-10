@@ -9,30 +9,15 @@ type password = {
   password: string,
 }
 
-let toPasswordTuple = (arr: array<option<string>>): option<(int, int, string, string)> => {
+let toPasswordRecord = (arr: array<option<string>>): option<password> => {
   switch arr {
   | [Some(min), Some(max), Some(target), Some(password)] =>
     switch (min->Belt.Int.fromString, max->Belt.Int.fromString) {
-    | (Some(min'), Some(max')) => Some((min', max', target, password))
+    | (Some(min'), Some(max')) => Some({min: min', max: max', target: target, password: password})
     | _ => None
     }
   | _ => None
   }
-}
-
-let toPasswordRecord = (passwordTuple: option<(int, int, string, string)>): option<password> => {
-  switch passwordTuple {
-  | Some((min, max, target, password)) =>
-    Some({min: min, max: max, target: target, password: password})
-  | _ => None
-  }
-}
-
-// 함수의 합성에서 합성이 직접적으로 이루어지는 함수.
-let toPasswordRecord = (arr: array<option<string>>): option<password> => {
-  let tuple = toPasswordTuple(arr)
-  let record = toPasswordRecord(tuple)
-  record
 }
 
 let checkValidCountPassword = (passwordRecord: option<password>) => {
