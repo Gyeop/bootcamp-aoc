@@ -152,10 +152,17 @@ let parsePassport = (dict: Js.Dict.t<string>) => {
   let checkPassportId = (id: string) => id->Js.String2.length === 9 ? Some(id) : None
 
   let parseHeight = (heightString: string): option<height> => {
-    // regex로 처리하려니, nested option이 되어 처리하기가 어려운데, 좋은 처리방법?
+    // regex로 처리하려니, nested option이 되어 처리하기가 번거로워진다.
     // let numberString = heightString->Js.String2.splitByRe(%re("/cm|in/"))->Belt.Array.get(0) // option<option<int>> ..
+    // -> nested option을 제거하려면 코드가 길어지는데, 이게 좋은 코드일까? 고민되는부분.
+    // let numberString =
+    //   heightString
+    //   ->Js.String2.splitByRe(%re("/cm|in/"))
+    //   ->Belt.Array.keepMap(x => x)
+    //   ->Belt.Array.get(0)
+    //   ->Belt.Option.flatMap(x => x->Belt.Int.fromString)
 
-    // 아래처럼 특정 index로 자르면 만약 단위가 "m" 처럼 한글자가 들어오게되면 대응할 수 없어진다.
+    // 아래처럼 특정 index로 자르면, 만약 단위가 "m" 처럼 한글자가 들어오게되면 대응할 수 없어진다.
     let number = heightString->Js.String2.slice(~from=0, ~to_=-2)->Belt.Int.fromString
     let unit = heightString->Js.String2.sliceToEnd(~from=-2)
 
