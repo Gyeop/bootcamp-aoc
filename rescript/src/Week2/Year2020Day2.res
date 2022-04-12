@@ -9,9 +9,14 @@ type password = {
   password: string,
 }
 
-let toPasswordRecord = (arr: array<option<string>>): option<password> => {
+let sequence = (arr: array<option<'a>>): option<array<'a>> => {
+  let arr2 = arr->Belt.Array.keepMap(x => x)
+  arr->Belt.Array.length === arr2->Belt.Array.length ? Some(arr2) : None
+}
+
+let toPasswordRecord = (arr: array<string>): option<password> => {
   switch arr {
-  | [Some(min), Some(max), Some(target), Some(password)] =>
+  | [min, max, target, password] =>
     switch (min->Belt.Int.fromString, max->Belt.Int.fromString) {
     | (Some(min'), Some(max')) => Some({min: min', max: max', target: target, password: password})
     | _ => None
@@ -20,36 +25,28 @@ let toPasswordRecord = (arr: array<option<string>>): option<password> => {
   }
 }
 
-let checkValidCountPassword = (passwordRecord: option<password>) => {
-  switch passwordRecord {
-  | Some(passwordRecord) => {
-      let {min, max, target, password} = passwordRecord
-      let targetCount =
-        password->Js.String2.split("")->Belt.Array.keep(s => s == target)->Belt.Array.length
-      targetCount >= min && max >= targetCount
-    }
-  | _ => false
-  }
+let checkValidCountPassword = (passwordRecord: password) => {
+  let {min, max, target, password} = passwordRecord
+  let targetCount =
+    password->Js.String2.split("")->Belt.Array.keep(s => s == target)->Belt.Array.length
+
+  targetCount >= min && max >= targetCount ? Some(passwordRecord) : None
 }
 
-let checkValidIndexPassword = (passwordRecord: option<password>) => {
-  switch passwordRecord {
-  | Some(passwordRecord) => {
-      let {min, max, target, password} = passwordRecord
-      let m1 = password->Js.String2.get(min - 1)
-      let m2 = password->Js.String2.get(max - 1)
-      m1 != m2 && (m1 == target || m2 == target)
-    }
-  | _ => false
-  }
+let checkValidIndexPassword = (passwordRecord: password) => {
+  let {min, max, target, password} = passwordRecord
+  let m1 = password->Js.String2.get(min - 1)
+  let m2 = password->Js.String2.get(max - 1)
+  m1 != m2 && (m1 == target || m2 == target) ? Some(passwordRecord) : None
 }
 
 let checkPassword = func =>
   passwords
   ->Belt.Array.map(password => password->Js.String2.splitByRe(%re("/\s|-|:\s/")))
-  ->Belt.Array.map(toPasswordRecord)
-  ->Belt.Array.map(func)
-  ->Belt.Array.keep(x => x)
+  ->Belt.Array.map(sequence)
+  ->Belt.Array.map(x => x->Belt.Option.flatMap(toPasswordRecord))
+  ->Belt.Array.map(x => x->Belt.Option.flatMap(func))
+  ->Belt.Array.keepMap(x => x)
   ->Belt.Array.length
 
 // Part 1
